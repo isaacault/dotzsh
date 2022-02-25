@@ -9,3 +9,46 @@ source ~/.zsh/external/powerlevel10k/powerlevel10k.zsh-theme
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+
+# Include completions
+fpath=(/home/isaac/.zsh/external/zsh-completions/src  $fpath)
+
+
+# The following lines were added by compinstall
+zstyle ':completion:*' completer _complete _match
+zstyle ':completion:*' format 'Completing %d'
+zstyle ':completion:*' glob 0
+zstyle ':completion:*' group-name ''
+zstyle ':completion:*' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion:*' matcher-list '+m:{a-z}={A-Z} r:|[._-]=** r:|=**' '' '' '+m:{a-z}={A-Z} r:|[._-]=** r:|=**'
+zstyle ':completion:*' max-errors 1 numeric
+zstyle ':completion:*' substitute 0
+zstyle :compinstall filename "$HOME/.zshrc"
+# End of lines added by compinstall
+
+# Completers for my own scripts
+zstyle ':completion:*:*:(album-cover|copy-geotag):*' file-patterns '*.(#i)(jp*g|png|tif*)'
+
+zstyle ':completion:*:*:photo-sort:*' file-patterns '*(/)'
+zstyle ':completion:*:*:photo-sort:*' file-sort time
+
+compdef untilquit=pkill
+
+# Don't complete backup files as commands.
+zstyle ':completion:*:complete:-command-::*' ignored-patterns '*\~'
+
+# Username completion.
+# Delete old definitions
+zstyle -d users
+# For SSH and Rsync, use remote users set in SSH configuration, plus root
+zstyle ':completion:*:*:(ssh|rsync):*' users root $(awk '$1 == "User" { print $2 }' ~/.ssh/config | sort -u)
+# For everything else, use non-system users from /etc/passwd, plus root
+zstyle ':completion:*:*:*:*' users root $(awk -F: '$3 > 1000 && $3 < 65000 { print $1 }' /etc/passwd)
+
+# Hostname completion
+zstyle ':completion:*' hosts $( grep -h '\.' $HOME/.hosts* )
+
+# URL completion. Use URLs from history.
+zstyle -e ':completion:*:*:urls' urls 'reply=( ${${(f)"$(egrep --only-matching \(ftp\|https\?\)://\[A-Za-z0-9\].\* $HISTFILE)"}%%[# ]*} )'
+
+# Quote stuff that looks like URLs automatically.
