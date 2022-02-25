@@ -1,0 +1,3 @@
+[submodule "external/powerlevel10k"]
+	path = external/powerlevel10k
+	url = git@github.com:romkatv/powerlevel10k.git
