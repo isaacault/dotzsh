@@ -13,7 +13,29 @@ source ~/.zsh/external/powerlevel10k/powerlevel10k.zsh-theme
 # Include completions
 fpath=(/home/isaac/.zsh/external/zsh-completions/src  $fpath)
 
+# Zsh settings for history
+HISTORY_IGNORE="(ls|[bf]g|exit|reset|clear|cd|cd ..|cd..)"
+HISTSIZE=25000
+HISTFILE=~/.zsh/zsh_history
+SAVEHIST=100000
+setopt INC_APPEND_HISTORY
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_IGNORE_SPACE
+setopt HIST_REDUCE_BLANKS
+setopt HIST_VERIFY
 
+
+# Enable color support of ls
+if [[ "$TERM" != "dumb" ]]; then
+    if [[ -x `which dircolors 2> /dev/null` ]]; then
+        eval `dircolors -b`
+        if ls --color &> /dev/null; then
+            alias 'ls=ls --color=auto'
+        fi
+    fi
+fi
+
+##############################################################################
 # The following lines were added by compinstall
 zstyle ':completion:*' completer _complete _match
 zstyle ':completion:*' format 'Completing %d'
@@ -45,10 +67,8 @@ zstyle ':completion:*:*:(ssh|rsync):*' users root $(awk '$1 == "User" { print $2
 # For everything else, use non-system users from /etc/passwd, plus root
 zstyle ':completion:*:*:*:*' users root $(awk -F: '$3 > 1000 && $3 < 65000 { print $1 }' /etc/passwd)
 
-# Hostname completion
-zstyle ':completion:*' hosts $( grep -h '\.' $HOME/.hosts* )
-
 # URL completion. Use URLs from history.
 zstyle -e ':completion:*:*:urls' urls 'reply=( ${${(f)"$(egrep --only-matching \(ftp\|https\?\)://\[A-Za-z0-9\].\* $HISTFILE)"}%%[# ]*} )'
 
-# Quote stuff that looks like URLs automatically.
+# End Completion stuff
+###############################################################################
